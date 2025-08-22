@@ -1,7 +1,7 @@
 "use client"
 
 
-import { SignInButton , UserButton } from "@clerk/nextjs";
+import { OrganizationSwitcher, SignInButton , UserButton } from "@clerk/nextjs";
 import {useMutation, useQuery,Authenticated, Unauthenticated } from "convex/react"
 import {api} from "@workspace/backend/_generated/api"
 import { Button } from "@workspace/ui/components/button";
@@ -13,10 +13,11 @@ const addUser = useMutation(api.users.add);
 
   return (
     <>
-    <Authenticated>
+
     <div className="flex flex-col items-center justify-center min-h-svh">
     <p> apps/web</p>
     <UserButton />
+    <OrganizationSwitcher hidePersonal/>
 
     <Button onClick ={() => addUser()}> Add</Button>
     <div className =" max-w-sm w-full mx-auto">
@@ -25,11 +26,6 @@ const addUser = useMutation(api.users.add);
     {JSON.stringify(users, null, 2)}
      </div>
     </div>
-    </Authenticated>
-    <Unauthenticated>
-      <p> Must be signed in!</p>
-      <SignInButton> Sign in!</SignInButton>
-    </Unauthenticated>
     </>
   )
 }
