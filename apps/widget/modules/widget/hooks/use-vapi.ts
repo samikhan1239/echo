@@ -12,7 +12,7 @@ export const useVapi =() =>{
     const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
 
     useEffect(() =>{
-        const vapiInstance = new Vapi("4a8f5a36-5d37-499e-b7e9-ceaaf1f96f94");
+        const vapiInstance = new Vapi("");
         setVapi(vapiInstance);
 vapiInstance.on("call-start", () =>{
     setIsConnected(true);
@@ -63,7 +63,7 @@ return () => {
         setIsConnecting(true);
 
         if(vapi) {
-            vapi.start("2afe9809-4acb-4571-9d65-d1779d054e65");
+            vapi.start("");
         }
     }
 
