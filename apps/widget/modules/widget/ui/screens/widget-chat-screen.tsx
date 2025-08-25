@@ -3,7 +3,10 @@
  import { zodResolver } from "@hookform/resolvers/zod";
  import {z} from "zod";
  import {useForm} from "react-hook-form"
+ import {useInfiniteScroll} from '@workspace/ui/hooks/use-infinite-scroll'
+import {InfiniteScrollTrigger} from "@workspace/ui/components/infinite-scroll-trigger"
 
+import{DicebearAvatar} from "@workspace/ui/components/dicebear-avatar"
  import { useAtomValue, useSetAtom } from "jotai";
  import { AlertTriangleIcon, ArrowLeftIcon, MenuIcon } from "lucide-react";
  import { contactSessionIdAtomFamily, conversationIdAtom, errorMessageAtom, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
@@ -79,6 +82,15 @@ const messages = useThreadMessages (
   {initialNumItems:10}
 );
 
+
+
+const {topElementRef, handleLoadMore , canLoadMore, isLoadingMore} = useInfiniteScroll({
+  status: messages.status,
+  loadMore: messages.loadMore,
+  loadSize:10
+});
+
+
 const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
   defaultValues:{
@@ -126,6 +138,11 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
   </WidgetHeader>
   <AIConversation>
     <AIConversationContent>
+      <InfiniteScrollTrigger
+      canLoadMore={canLoadMore}
+      isLoadingMore={isLoadingMore}
+      onLoadMore={handleLoadMore}
+      ref={topElementRef}/>
       {toUIMessages(messages.results ?? [])?.map((message) =>{
         return (
           <AIMessage
@@ -136,7 +153,13 @@ const onSubmit = async (values: z.infer<typeof formSchema>) =>{
                 {message.text}
               </AIResponse>
             </AIMessageContent>
-            {/* TODO: Add Avatar component */}
+           {message.role === "assistant" && (
+            <DicebearAvatar
+            
+            imageUrl="/logo.svg"
+            seed="assistant"
+            size={32}/>
+           )}
 
           </AIMessage>
         )
