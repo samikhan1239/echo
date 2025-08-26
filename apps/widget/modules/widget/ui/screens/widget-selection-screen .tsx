@@ -8,6 +8,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useMutation } from "convex/react";
 import { api } from "@workspace/backend/_generated/api";
 import { useState } from "react";
+import { WidgetFooter } from "../components/widget-footer";
 
  export const WidgetSelectionScreen =() =>{
 const setScreen = useSetAtom(screenAtom);
@@ -91,6 +92,8 @@ const handleNewConversation = async () => {
   
 
   </div>
+
+  <WidgetFooter/>
 
         </>
     )
