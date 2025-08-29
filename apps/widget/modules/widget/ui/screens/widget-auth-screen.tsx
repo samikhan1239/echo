@@ -12,7 +12,7 @@ import { Languages } from "lucide-react";
 import { platform } from "os";
 import { Doc } from "@workspace/backend/_generated/dataModel";
 import { useAtomValue, useSetAtom } from "jotai";
-import { contactSessionIdAtomFamily, organizationIdAtom } from "../../atoms/widget-atoms";
+import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
 
 
 
@@ -22,9 +22,11 @@ const formSchema = z.object({
 });
 
 
-const organizationId ="123";
+
 
 export const WidgetAuthScreen = () =>{
+
+  const setScreen = useSetAtom(screenAtom);
   const organizationId =  useAtomValue(organizationIdAtom);
 
   const setContactSessionId = useSetAtom(
@@ -73,6 +75,7 @@ const contactSessionId = await createContactSession({
 });
 
 setContactSessionId(contactSessionId);
+setScreen("selection");
 }
 
     return (
