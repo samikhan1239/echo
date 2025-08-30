@@ -3,6 +3,7 @@ import { OrganizationGuard } from "@/modules/auth/ui/components/organization-gua
 import {SidebarProvider} from "@workspace/ui/components/sidebar";
 import { cookies } from "next/headers";
 import { DashboardSidebar } from "../components/dashboard-sidebar";
+import { Provider } from "jotai/react";
 
 export const DashboardLayout = async ({children} : {children:React.ReactNode}) =>{
     const cookieStore = await cookies();
@@ -10,6 +11,7 @@ export const DashboardLayout = async ({children} : {children:React.ReactNode}) =
     return (
         <AuthGuard>
             <OrganizationGuard>
+                <Provider>
                 <SidebarProvider defaultOpen ={defaultOpen}>
                     <DashboardSidebar/>
                 <main className ="flex flex-1 flex-col">
@@ -17,6 +19,7 @@ export const DashboardLayout = async ({children} : {children:React.ReactNode}) =
 
                 </main>
                 </SidebarProvider>
+                </Provider>
 
             </OrganizationGuard>
 
