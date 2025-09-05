@@ -182,6 +182,10 @@ const handleToggleStatus = async () =>{
         setIsUpdatingStatus(false);
     }
 
+};
+
+if(conversation === undefined || messages.status === "LoadingFirstPage"){
+    return <ConversationIdViewLoading/>
 }
 
 
@@ -369,6 +373,22 @@ const handleToggleStatus = async () =>{
                     </AIConversationContent>
 
                 </AIConversation>
+                <div className ="p-2">
+                    <AIInput>
+                        <AIInputTextarea
+                        disabled
+                        placeholder="Type your response as an operator... "
+                        />
+
+                        <AIInputToolbar>
+
+                            <AIInputTools/>
+                            <AIInputSubmit disabled status ="ready" />
+                         </AIInputToolbar>
+
+                    </AIInput>
+
+                </div>
 
 
         </div>
