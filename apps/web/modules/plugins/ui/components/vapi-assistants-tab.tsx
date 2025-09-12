@@ -101,9 +101,9 @@ export const VapiAssistantsTab =() =>{
                         </TableCell>
 
                          <TableCell className="max-w-xs px-6 py-4">
-                            <span className="truncate text-muted-foreground text-sm">
+                            <p className="truncate text-muted-foreground text-sm">
                                 {assistant.firstMessage || "No greeting configured"}
-                            </span>
+                            </p>
                    
 
                         </TableCell>

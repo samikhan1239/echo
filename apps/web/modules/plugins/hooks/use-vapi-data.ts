@@ -20,25 +20,39 @@ export const useVapiAssistants =() :{
 
 
     useEffect(() => {
+        let cancelled = false;
         const fetchData = async () => {
             try{
    setIsLoading(true);
    const result = await getAssistants();
+
+   if(cancelled){
+    return;
+   }
    setData(result);
    setError(null)
             } catch(error){
+                   if(cancelled){
+    return;
+   }
                 setError(error as Error);
                 toast.error("Failed to fetch assistants")
 
             } finally{
+                if(!cancelled) {
                  setIsLoading(false);
+                }
 
             }
 
         }
 
         fetchData();
-    }, [getPhoneNumbers]);
+
+        return () => {
+            cancelled = true;
+        }
+    }, []);
 
     return {data, isLoading, error}
 }
@@ -57,25 +71,42 @@ export const useVapiPhoneNumbers =() :{
 
 
     useEffect(() => {
+
+let cancelled = false;
+
+
         const fetchData = async () => {
             try{
    setIsLoading(true);
    const result = await getPhoneNumbers();
+   if(!cancelled){
+    return;
+   }
    setData(result);
    setError(null)
             } catch(error){
+
+                   if(cancelled){
+    return;
+   }
                 setError(error as Error);
                 toast.error("Failed to fetch phone numbers")
 
             } finally{
+                if(!cancelled){
                  setIsLoading(false);
+                }
 
             }
 
         }
 
         fetchData();
-    }, [getPhoneNumbers]);
+
+        return () => {
+            cancelled = true;
+        }
+    }, []);
 
     return {data, isLoading, error}
 }
