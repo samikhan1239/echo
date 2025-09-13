@@ -121,6 +121,10 @@ export const addFile = action({
         
                 }
 
+
+
+                
+
                 const {bytes, filename, category} = args;
 
                 const mimeType = args.mimeType || guessMimeType(filename,bytes);
