@@ -1,8 +1,8 @@
  "use client "
 
  import { useAtomValue, useSetAtom } from "jotai";
- import { AlertTriangleIcon, ChevronRightIcon, MessageSquareIcon } from "lucide-react";
- import { contactSessionIdAtomFamily, conversationIdAtom, errorMessageAtom, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
+ import { AlertTriangleIcon, ChevronRightIcon, MessageSquareIcon, MicIcon } from "lucide-react";
+ import { contactSessionIdAtomFamily, conversationIdAtom, errorMessageAtom, hasVapiSecretsAtom, organizationIdAtom, screenAtom, widgetSettingsAtom } from "../../atoms/widget-atoms";
  import { WidgetHeader } from "../components/widget-header";
 import { Button } from "@workspace/ui/components/button";
 import { useMutation } from "convex/react";
@@ -14,6 +14,8 @@ import { WidgetFooter } from "../components/widget-footer";
 const setScreen = useSetAtom(screenAtom);
 const setErrorMessage = useSetAtom(errorMessageAtom);
 const setConversationId = useSetAtom(conversationIdAtom);
+const widgetSettings = useAtomValue(widgetSettingsAtom);
+const hasVapiSecrets = useAtomValue(hasVapiSecretsAtom);
 const organizationId = useAtomValue(organizationIdAtom);
 const contactSessionId = useAtomValue(
   contactSessionIdAtomFamily(organizationId || " " )
@@ -89,6 +91,38 @@ const handleNewConversation = async () => {
       <ChevronRightIcon/>
 
     </Button>
+
+{hasVapiSecrets && widgetSettings?.vapiSettings?.assistantId && (
+     <Button
+    className="h-16 w-full justify-between"
+    variant="outline"
+    onClick={handleNewConversation}
+    disabled={isPending}
+    >
+      <div className ="flex items-center gap-x-2">
+        <MicIcon className ="size-4"/>
+        <span> Start voice call</span>
+      </div>
+      <ChevronRightIcon/>
+
+    </Button>
+    )}
+
+    {hasVapiSecrets && widgetSettings?.vapiSettings?.phoneNumber && (
+     <Button
+    className="h-16 w-full justify-between"
+    variant="outline"
+    onClick={handleNewConversation}
+    disabled={isPending}
+    >
+      <div className ="flex items-center gap-x-2">
+        <MicIcon className ="size-4"/>
+        <span> Call us</span>
+      </div>
+      <ChevronRightIcon/>
+
+    </Button>
+    )}
   
 
   </div>
