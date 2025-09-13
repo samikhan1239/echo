@@ -12,5 +12,8 @@ const widgetSettings = await ctx.db.query("widgetSettings")
 q.eq("organizationId" , args.organizationId)).unique();
 
 
+return widgetSettings;
+
+
     }
   })

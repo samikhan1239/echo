@@ -17,8 +17,7 @@ import{useVapi} from "@/modules/widget/hooks/use-vapi";
 import {WidgetHeader} from "@/modules/widget/ui/components/widget-header";
 import { useSetAtom } from "jotai";
 import { screenAtom } from "../../atoms/widget-atoms";
-import { ArrowLeftIcon, MicIcon } from "lucide-react";
-import { WidgetFooter } from "../components/widget-footer";
+import { ArrowLeftIcon, MicIcon, MicOffIcon } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 
 
@@ -54,6 +53,27 @@ isConnecting
 
   </div>
 </WidgetHeader>
+{transcript.length >0 ? (
+  <AIConversation className="h-full flex-1">
+    <AIConversationContent>
+
+      {transcript.map((message, index) =>(
+
+<AIMessage
+from={message.role}
+key={`${message.role}-${index}-${message.text}`}
+
+>
+  <AIMessageContent> {message.text}</AIMessageContent>
+
+</AIMessage>
+
+      ))}
+    </AIConversationContent>
+    <AIConversationScrollButton/>
+
+  </AIConversation>
+) : (
 
 <div className="flex flex-1 h-full flex-col items-center justify-center gap-y-4">
 <div className="flex items-center justify-center rounded-full border bg-white p-3">
@@ -65,6 +85,7 @@ isConnecting
   Transcript will appear here
 </p>
 </div>
+)}
 <div className="border-t bg-background p-4">
   <div className="flex flex-col items-center gap-y-4">
     {isConnected && (
@@ -80,12 +101,26 @@ isConnecting
     )}
     <div className="flex w-full justify-center">
       {isConnected ? (
-        <Button>
+        <Button
+        className ="w-full"
+        size="lg"
+        variant="destructive"
+        onClick={() =>endCall()}
+        
+        >
+          <MicOffIcon/>
 End Call 
         </Button>
 
       ) : (
-        <Button>
+        <Button
+        className="w-full"
+        disabled={isConnecting}
+        size="lg"
+        onClick={() =>startCall()}
+        
+        >
+          <MicIcon/>
  Start Call
         </Button>
       )  }
@@ -95,7 +130,7 @@ End Call
   </div>
 
 </div>
-<WidgetFooter/>
+
 
 
 </>

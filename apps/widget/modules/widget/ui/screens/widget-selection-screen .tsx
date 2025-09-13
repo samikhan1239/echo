@@ -1,7 +1,7 @@
  "use client "
 
  import { useAtomValue, useSetAtom } from "jotai";
- import { AlertTriangleIcon, ChevronRightIcon, MessageSquareIcon, MicIcon } from "lucide-react";
+ import { AlertTriangleIcon, ChevronRightIcon, MessageSquareIcon, MicIcon, PhoneIcon } from "lucide-react";
  import { contactSessionIdAtomFamily, conversationIdAtom, errorMessageAtom, hasVapiSecretsAtom, organizationIdAtom, screenAtom, widgetSettingsAtom } from "../../atoms/widget-atoms";
  import { WidgetHeader } from "../components/widget-header";
 import { Button } from "@workspace/ui/components/button";
@@ -96,7 +96,7 @@ const handleNewConversation = async () => {
      <Button
     className="h-16 w-full justify-between"
     variant="outline"
-    onClick={handleNewConversation}
+    onClick={() => setScreen("voice")}
     disabled={isPending}
     >
       <div className ="flex items-center gap-x-2">
@@ -112,11 +112,11 @@ const handleNewConversation = async () => {
      <Button
     className="h-16 w-full justify-between"
     variant="outline"
-    onClick={handleNewConversation}
+    onClick={() => setScreen("contact")}
     disabled={isPending}
     >
       <div className ="flex items-center gap-x-2">
-        <MicIcon className ="size-4"/>
+        <PhoneIcon className ="size-4"/>
         <span> Call us</span>
       </div>
       <ChevronRightIcon/>
