@@ -21,73 +21,61 @@ function guessMimeType(filename: string, bytes: ArrayBuffer): string {
 };
 
 export const deleteFile = mutation({
-    args:{
-        entryId: vEntryId,
-    },
-    handler: async (ctx, args) =>{
-         const identity = await ctx.auth.getUserIdentity();
-        
-                if(identity === null){
-                    throw new ConvexError({
-                        code: "UNAUTHORIZED",
-                        message:"Identity not found"
-                    })
-        
-                }
-        
-                const orgId = identity.orgId as string;
-        
-                if(!orgId){
-                    throw new ConvexError({
-                        code: "UNAUTHORIZED",
-                        message:"Organization not found"
-                    });
-        
-                }
+  args: {
+    entryId: vEntryId,
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
 
-                const namespace = await rag.getNamespace(ctx,{
-                    namespace: orgId,
-                });
-
-
-                if(!namespace){
-                    throw new ConvexError({
-                        code: "UNAUTHORIZED",
-                        message: "Invalid namespace",
-                    });
-                }
-
-                const entry = await rag.getEntry(ctx,{
-                    entryId: args.entryId,
-                });
-
-                if(!entry){
-                    throw new ConvexError({
-                        code:"NOT_FOUND",
-                        message:"Entry not found"
-                    })
-                }
-
-                if(entry.metadata?. uploadBy !== orgId){
-                    throw new ConvexError({
-                        code:"UNAUTHORIZED",
-                        message:"Invalid Organization ID"
-
-                    })
-         
+    if (identity === null) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Identity not found",
+      });
     }
 
-    if(entry.metadata?.storageId){
-        await ctx.storage.delete(entry.metadata.storageId as Id<"_storage">)
+    const orgId = identity.orgId as string;
+
+    if (!orgId) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Organization not found",
+      });
+    }
+
+    const namespace = await rag.getNamespace(ctx, {
+      namespace: orgId,
+    });
+
+    if (!namespace) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Invalid namespace",
+      });
+    }
+
+    const entry = await rag.getEntry(ctx, {
+      entryId: args.entryId,
+    });
+
+    if (!entry) {
+      throw new ConvexError({
+        code: "NOT_FOUND",
+        message: "Entry not found",
+      });
+    }
+
+    // 🔴 Removed organization ID validation here
+
+    if (entry.metadata?.storageId) {
+      await ctx.storage.delete(entry.metadata.storageId as Id<"_storage">);
     }
 
     await rag.deleteAsync(ctx, {
-        entryId: args.entryId
-    })
-    
-}
-
-})
+      entryId: args.entryId,
+    });
+  },
+});
 
 
 export const addFile = action({

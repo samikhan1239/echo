@@ -72,7 +72,7 @@ loadSize: 10,
 
 
         <DeleteFileDialog
-        onOpenChange={setUploadDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
         open={deleteDialogOpen}
         file={selectedFile}
         onDelete={handleFileDeleted}

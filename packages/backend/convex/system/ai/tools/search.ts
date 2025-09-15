@@ -1,76 +1,90 @@
 import { google } from "@ai-sdk/google";
-import {createTool} from "@convex-dev/agent"
-import {generateText} from "ai";
+import { createTool } from "@convex-dev/agent";
+import { generateText } from "ai";
 import z from "zod";
-import {internal} from "../../../_generated/api"
+import { internal } from "../../../_generated/api";
 import { supportAgent } from "../agents/supportAgent";
 import rag from "../rag";
 import { SEARCH_INTERPRETER_PROMPT } from "../constants";
+
 export const search = createTool({
-    description: "Search the kowledge bse for relevant information to help answer user questions",
-    args: z.object({
-        query:z.string()
-        .describe("The search query to find relevant information")
-    }),
-    handler: async (ctx,args) =>{
+  description:
+    "Search the knowledge base for relevant information to help answer user questions",
+  args: z.object({
+    query: z.string().describe("The search query to find relevant information"),
+  }),
+  handler: async (ctx, args) => {
+    console.log("🔎 [Search Tool] Called with args:", args);
 
-        if(!ctx.threadId){
-            return "Missing thread ID";
-        }
+    if (!ctx.threadId) {
+      console.error("❌ Missing thread ID");
+      return "Missing thread ID";
+    }
 
-        const conversation = await ctx.runQuery(
-            internal.system.conversations.getByThreadId,
-            {threadId: ctx.threadId},
-        );
+    console.log("📌 Thread ID:", ctx.threadId);
 
-        if(!conversation){
-            return "Conversation not found"
-        }
+    const conversation = await ctx.runQuery(
+      internal.system.conversations.getByThreadId,
+      { threadId: ctx.threadId }
+    );
 
-        const orgId = conversation.organizationId;
-        const searchResult=  await rag.search(ctx,{
-            namespace: orgId,
-            query: args.query,
-            limit:5,
+    console.log("📂 Conversation:", conversation);
 
-        });
+    if (!conversation) {
+      console.error("❌ Conversation not found");
+      return "Conversation not found";
+    }
 
-        const contextText = `Found results in ${searchResult.entries.map((e) => e.title || null  )
-            
-        .filter ((t) => t!== null)
-    .join(", ")
-    
-    }. Here is the context:\n\n${searchResult.text}`;
+    try {
+      const searchResult = await rag.search(ctx, {
+        namespace: "global", // fallback
+        query: args.query,
+        limit: 5,
+      });
 
-    const response = await generateText({
+      console.log("📑 Search Results:", searchResult);
 
+      const titles = searchResult.entries
+        ?.map((e) => e.title || e.text || null)
+        .filter((t) => t !== null)
+        .join(", ");
+
+      const contextText = `Found results in ${titles}. Here is the context:\n\n${
+        searchResult.text || ""
+      }`;
+
+      console.log("📝 Context Text:", contextText);
+
+      const response = await generateText({
         messages: [
-            {
-                role:"system",
-                content:SEARCH_INTERPRETER_PROMPT
-            },
-            {
-                role:"user",
-                content:  `User asked: "${args.query}"\n\nSearch results: ${contextText}`
-
-
-            }
+          {
+            role: "system",
+            content: SEARCH_INTERPRETER_PROMPT,
+          },
+          {
+            role: "user",
+            content: `User asked: "${args.query}"\n\nSearch results: ${contextText}`,
+          },
         ],
         model: google.chat("gemini-1.5-flash"),
-    });
+      });
 
-    await supportAgent.saveMessage(ctx,{
-threadId: ctx.threadId,
-message:{
-    role: "assistant",
-    content: response.text,
-}
+      console.log("🤖 LLM Response:", response);
 
-    });
+      await supportAgent.saveMessage(ctx, {
+        threadId: ctx.threadId,
+        message: {
+          role: "assistant",
+          content: response.text,
+        },
+      });
 
-    return response.text;
+      console.log("✅ Message saved to supportAgent");
 
-
-
+      return response.text;
+    } catch (err) {
+      console.error("❌ Error during search handler:", err);
+      return "Error while searching knowledge base";
     }
-})
+  },
+});

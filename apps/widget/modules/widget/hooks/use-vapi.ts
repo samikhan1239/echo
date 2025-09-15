@@ -6,11 +6,6 @@ interface TranscriptMessage {
   text: string;
 }
 
-// Vapi configuration type
-interface VapiConfig {
-  assistantId: string; // Assistant ID from Vapi Dashboard
-}
-
 export const useVapi = () => {
   const [vapi, setVapi] = useState<Vapi | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -18,14 +13,16 @@ export const useVapi = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
 
-  // Vapi configuration with assistant ID
-  const vapiConfig: VapiConfig = {
-    assistantId: "2afe9809-4acb-4571-9d65-d1779d054e65", // Your provided assistant ID
-  };
+  // Pull keys from env (make sure to define them in .env.local)
+  const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY as string;
+  const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID as string;
 
   useEffect(() => {
-    // Initialize Vapi with public key (use environment variable in production)
-    const publicKey = "21a45305-7471-438a-af35-45db84e083fa";
+    if (!publicKey) {
+      console.error("Vapi public key is missing in env!");
+      return;
+    }
+
     const vapiInstance = new Vapi(publicKey);
     setVapi(vapiInstance);
 
@@ -68,18 +65,20 @@ export const useVapi = () => {
       }
     });
 
-    // Cleanup on unmount
     return () => {
       vapiInstance.stop();
       setVapi(null);
     };
-  }, []);
+  }, [publicKey]);
 
   const startCall = async () => {
     setIsConnecting(true);
     if (vapi) {
       try {
-        await vapi.start(vapiConfig.assistantId); // Pass the assistantId string directly
+        if (!assistantId) {
+          throw new Error("Vapi assistant ID is missing in env!");
+        }
+        await vapi.start(assistantId);
         console.log("Vapi call started successfully");
       } catch (error) {
         console.error("Failed to start Vapi call:", error);
