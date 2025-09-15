@@ -4,6 +4,7 @@
     "type" : "module",
     "private" : true,
     "scripts":{
+        "dev" : "vite --port 3002",
         "build" :  "vite build"
     },
     "devDependencies": {
