@@ -1,43 +1,24 @@
-import { ConvexError, v } from "convex/values";
-import { mutation } from "../_generated/server";
-import { internal } from "../_generated/api";
+import { v } from "convex/values";
+import { action } from "../_generated/server";
+import { ConvexError } from "convex/values";
 
-export const upsert = mutation({
-    args: {
-        service: v.union(v.literal("vapi")),
-        value: v.any(),
-    },
-    handler: async (ctx, args) => {
-         const identity = await ctx.auth.getUserIdentity();
-                
-                        if(identity === null){
-                            throw new ConvexError({
-                                code: "UNAUTHORIZED",
-                                message:"Identity not found"
-                            })
-                
-                        }
-                
-                        const orgId = identity.orgId as string;
-                
-                        if(!orgId){
-                            throw new ConvexError({
-                                code: "UNAUTHORIZED",
-                                message:"Organization not found"
-                            });
-                
-                        }
+export const getVapiSecrets = action({
+  args: {
+    organizationId: v.string(), // Included for compatibility but unused
+  },
+  handler: async () => {
+    // Validate VAPI public and private API keys from environment variables
+    const publicApiKey = process.env.VAPI_PUBLIC_API_KEY;
+    const privateApiKey = process.env.VAPI_PRIVATE_API_KEY;
 
-                        // TODO: Check for subscription
-
-                        await ctx.scheduler.runAfter(0,internal.system.secrets.upsert,{
-                            service: args.service,
-                            organizationId: orgId,
-                            value: args.value,
-                        })
-                
-
-
-
+    if (!publicApiKey || !privateApiKey) {
+      throw new ConvexError({
+        code: "NOT_FOUND",
+        message: "VAPI API keys not configured in environment",
+      });
     }
-})
+
+    // Note: No AWS Secrets Manager interaction; VAPI keys are fetched from environment variables. organizationId is included for compatibility but unused. secretName is retained in plugins table but unused here
+    return { publicApiKey, privateApiKey };
+  },
+});
