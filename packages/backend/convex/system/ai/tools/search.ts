@@ -66,7 +66,7 @@ export const search = createTool({
             content: `User asked: "${args.query}"\n\nSearch results: ${contextText}`,
           },
         ],
-        model: google.chat("gemini-1.5-flash"),
+        model: google.chat("gemini-2.0-flash-exp"),
       });
 
       console.log("🤖 LLM Response:", response);

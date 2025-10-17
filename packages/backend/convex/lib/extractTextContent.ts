@@ -6,9 +6,9 @@ import { Id } from "../_generated/dataModel";
 
 
 const AI_MODELS ={
-    image: google.chat("gemini-1.5-flash"),
-    pdf: google.chat("gemini-1.5-flash"),
-    html: google.chat("gemini-1.5-flash")
+    image: google.chat("gemini-2.0-flash-exp"),
+    pdf: google.chat("gemini-2.0-flash-exp"),
+    html: google.chat("gemini-2.0-flash-exp")
 } as const;
 
 
